@@ -36,7 +36,7 @@ The Simulator doesn't provide altitude, so that field shows `—` there.
 ## Install on your iPhone (free Apple ID)
 
 1. In Xcode, select the **GPSDump** target. Under **Signing & Capabilities**, set **Team** to your Apple ID ("Personal Team").
-2. Change the **Bundle Identifier** from `com.example.GPSDump` to something unique, e.g. `com.yourname.GPSDump`.
+2. The **Bundle Identifier** is `com.banhill.GPSDump`. If you fork this project, change it to something unique, e.g. `com.yourname.GPSDump`, because bundle IDs must be unique across Apple.
 3. On the iPhone, turn on **Settings → Privacy & Security → Developer Mode** and restart when asked.
 4. Connect the iPhone, select it as the run destination, and press **Run**.
 5. The first time, trust the developer on the phone: **Settings → General → VPN & Device Management**.
