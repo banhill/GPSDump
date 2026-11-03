@@ -4,6 +4,8 @@ A minimal iPhone app that shows the device's raw location data: speed, latitude/
 
 Navigation apps are often useless on a fast train or a plane: they snap your position to roads, and many stop working without a data connection. GPSDump does neither. It shows what the GNSS receiver reports, and it works offline.
 
+<p align="center"><img src="docs/screenshot.png" alt="GPSDump showing 885 km/h during a simulated flight" width="300"></p>
+
 ## Features
 
 - **Speed**: shown large, in km/h or mph. It comes from the GNSS Doppler measurement (accurate to about ±0.5 km/h even at 900 km/h). When that's unavailable, the app falls back to a speed worked out from the change in position, marked with `≈`.
@@ -70,6 +72,7 @@ The thresholds are constants at the top of `LocationModel.swift`.
 ```
 GPSDump/
 ├── GPSDump.xcodeproj         Xcode project (open this)
+├── docs/screenshot.png       README screenshot
 ├── GPSDump/                  App sources
 │   ├── GPSDumpApp.swift      App entry point
 │   ├── ContentView.swift     The single screen and value formatting
