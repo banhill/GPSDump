@@ -84,19 +84,10 @@ struct ContentView: View {
     }
 
     private var footer: some View {
-        HStack {
-            Button {
-                model.mode = model.mode == .ground ? .air : .ground
-            } label: {
-                Text(model.mode == .ground ? "MODE: GROUND/RAIL" : "MODE: AIRBORNE")
-                    .font(.caption)
-                    .padding(.horizontal, 12).padding(.vertical, 8)
-                    .overlay(Capsule().stroke(.white.opacity(0.3)))
-            }
-            .tint(.white)
-            Spacer()
-            Text("tap anywhere: units").font(.caption2).foregroundStyle(.tertiary)
-        }
+        Text("tap anywhere: units")
+            .font(.caption2)
+            .foregroundStyle(.tertiary)
+            .frame(maxWidth: .infinity, alignment: .trailing)
     }
 
     // MARK: - Formatting
@@ -104,25 +95,20 @@ struct ContentView: View {
     private var loc: CLLocation? { model.location }
     private let dash = "—"
 
-    /// Doppler speed from the GNSS chip when valid, otherwise derived from consecutive positions.
-    private var speedMetersPerSecond: (value: Double, derived: Bool)? {
-        guard let loc else { return nil }
-        if loc.speed >= 0 { return (loc.speed, false) }
-        if let derived = model.derivedSpeed { return (derived, true) }
-        return nil
-    }
+    private var speedFactor: Double { imperial ? 2.236936 : 3.6 }
 
     private var speedValue: String {
-        guard let s = speedMetersPerSecond else { return dash }
-        let converted = s.value * (imperial ? 2.236936 : 3.6)
+        guard let s = model.speed else { return dash }
+        let converted = s.metersPerSecond * speedFactor
         return String(format: converted < 100 ? "%.1f" : "%.0f", converted)
     }
 
     private var speedNote: String {
-        guard let s = speedMetersPerSecond, let loc else { return " " }
-        if s.derived { return "≈ derived from position change" }
-        guard loc.speedAccuracy >= 0 else { return " " }
-        return "± " + String(format: "%.1f", loc.speedAccuracy * (imperial ? 2.236936 : 3.6))
+        guard let s = model.speed else {
+            return loc == nil ? " " : "no reliable reading (weak signal)"
+        }
+        let accuracy = "± " + String(format: "%.1f", s.accuracy * speedFactor)
+        return s.source == .derived ? "≈ from position change, \(accuracy)" : accuracy
     }
 
     private var latitude: String {

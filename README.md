@@ -7,11 +7,12 @@ Navigation apps are often useless on a fast train or a plane: they snap your pos
 ## Features
 
 - **Speed**: shown large, in km/h or mph. It comes from the GNSS Doppler measurement (accurate to about ±0.5 km/h even at 900 km/h). When that's unavailable, the app falls back to a speed worked out from the change in position, marked with `≈`.
+- **No absurd readings**: with weak reception, a speed is shown only when it can be trusted. Otherwise the app shows `—` (see [Speed filtering](#speed-filtering)).
 - **Latitude / longitude** with horizontal accuracy (±).
 - **Altitude** above mean sea level, with vertical accuracy (±).
 - **Course**: heading in degrees with a compass point, plus accuracy.
 - **Fix age**: a status dot that is green when the fix is under 3 s old, yellow under 10 s, red after that.
-- **Mode**: *Ground/Rail* (`.otherNavigation`) or *Airborne* (`.airborne`). Neither snaps to roads.
+- **No road snapping**: uses Core Location's `.airborne` activity type, which suits trains as well as planes.
 - **Units**: tap anywhere on the screen to switch between metric and imperial. The choice is remembered.
 - The screen stays on while the app is open.
 
@@ -50,6 +51,15 @@ With a free Apple ID, the app's signature expires after **7 days**. Reconnect th
 - **Airplane mode is fine.** GPS only receives, so it keeps working.
 - **Trust the ± values and the fix age**, not just the number.
 
+## Speed filtering
+
+Choppy reception, for example a Wi-Fi or cell-based position on a plane, can make positions jump by kilometres. Divided by a fraction of a second, that gives readings like 100,000 km/h. GPSDump shows `—` instead, unless:
+
+- **Doppler speed**: its reported accuracy is within ±36 km/h and the value is at most 1,800 km/h (about twice an airliner's cruise speed).
+- **Position-based speed**: both fixes are accurate to 100 m or better, and they are far enough apart that their position errors give at most ±18 km/h (or 5 %) of uncertainty. With ±10 m fixes on a train at 300 km/h, that takes about 4 seconds. The same 1,800 km/h cap applies.
+
+The thresholds are constants at the top of `LocationModel.swift`.
+
 ## Limitations
 
 - iOS doesn't expose raw GNSS data (satellite count, signal strength, NMEA). Values come from Core Location, which fuses GNSS with other sources when they're available.
@@ -60,8 +70,15 @@ With a free Apple ID, the app's signature expires after **7 days**. Reconnect th
 ```
 GPSDump/
 ├── GPSDump.xcodeproj         Xcode project (open this)
-└── GPSDump/                  App sources
-    ├── GPSDumpApp.swift      App entry point
-    ├── ContentView.swift     The single screen and value formatting
-    └── LocationModel.swift   Core Location live updates, mode, derived speed
+├── GPSDump/                  App sources
+│   ├── GPSDumpApp.swift      App entry point
+│   ├── ContentView.swift     The single screen and value formatting
+│   ├── LocationModel.swift   Core Location live updates, speed filtering
+│   └── Assets.xcassets       App icon
+└── Tools/
+    └── make_icon.swift       Generates the app icon: swift Tools/make_icon.swift <output.png>
 ```
+
+## License
+
+GPSDump is free software, licensed under the [GNU General Public License v3.0](LICENSE).
